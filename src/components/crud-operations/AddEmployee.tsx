@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { TransitionProps } from "@mui/material/transitions";
 import { AddEmployeeComponentProps } from "@/types/crud.types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/router";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -28,6 +29,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const AddEmployee = (props: AddEmployeeComponentProps) => {
+  const router = useRouter()
   const { addEmployeeOpen, setAddEmployeeOpen, setPage } = props;
   const dispatch = useAppDispatch();
 
@@ -102,6 +104,9 @@ const AddEmployee = (props: AddEmployeeComponentProps) => {
     } else if (employeeAddedDataIsError) {
       toast(employeeAddedDataError, { autoClose: 2000, type: "error" });
       dispatch(resetAddEmployee())
+      if (employeeAddedDataError === "Invalid Token") {
+        router.push('/login')
+      }
     }
   }, [employeeAddedDataIsSuccess, employeeAddedDataIsError])
 

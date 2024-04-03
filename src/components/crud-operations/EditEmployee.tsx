@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { TransitionProps } from "@mui/material/transitions";
 import { EditEmployeeComponentProps } from "@/types/crud.types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/router";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -29,6 +30,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const EditEmployee = (props: EditEmployeeComponentProps) => {
+  const router = useRouter()
   const { editEmployeeopen, setEditEmployeeOpen, tableRowId } = props;
   const dispatch = useAppDispatch();
 
@@ -120,6 +122,9 @@ const EditEmployee = (props: EditEmployeeComponentProps) => {
     } else if (employeeEditDataIsError) {
       toast(employeeEditDataError, { autoClose: 2000, type: "error" });
       dispatch(resetEditEmployee())
+      if (employeeEditDataError === "Invalid Token") {
+        router.push('/login')
+      }
     }
   }, [employeeEditDataIsSuccess, employeeEditDataIsError])
 

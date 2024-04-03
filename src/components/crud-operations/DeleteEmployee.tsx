@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { TransitionProps } from "@mui/material/transitions";
 import { DeleteEmployeeComponentProps } from "@/types/crud.types";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/router";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -20,6 +21,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const DeleteEmployee = (props: DeleteEmployeeComponentProps) => {
+  const router = useRouter()
   const {
     deleteEmployeeOpen,
     setDeleteEmployeeOpen,
@@ -68,6 +70,9 @@ const DeleteEmployee = (props: DeleteEmployeeComponentProps) => {
     } else if (employeeDeleteDataIsError) {
       toast(employeeDeleteDataError, { autoClose: 2000, type: "error" });
       dispatch(resetDeleteEmployee())
+      if (employeeDeleteDataError === "Invalid Token") {
+        router.push('/login')
+      }
     }
   }, [employeeDeleteDataIsError, employeeDeleteDataIsSuccess])
 

@@ -53,7 +53,6 @@ export const createAsyncThunkWithTokenRefresh = <
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponseType>;
 
-      // Check for gateway timeout error
       if (axiosError.response && axiosError.response.status === 504) {
         throw new Error("Gateway Timeout");
       } else if (axiosError.response && axiosError.response.status === 404) {
@@ -70,11 +69,9 @@ export const createAsyncThunkWithTokenRefresh = <
 
       // Handle unauthorized (401) error (access token expired)
       else if (axiosError.response && axiosError.response.status === 401) {
-        console.log("code entered on token expired");
         // Attempt to refresh the access token
         const refreshedToken = await refreshAccessToken();
 
-        // Check for gateway timeout error after token refresh
         if (refreshedToken.response && refreshedToken.response.status === 504) {
           throw new Error("Gateway Timeout");
         } else if (
@@ -90,7 +87,7 @@ export const createAsyncThunkWithTokenRefresh = <
             "There was an error with the internal server. Please contact your site administrator."
           );
         }
-        // Check if the server is stopped with a 500 error and no specific error message after token refresh
+        // Check if the server is stopped and no specific error message after token refresh
         else if (
           refreshedToken.response &&
           !refreshedToken.response.data.error
@@ -105,14 +102,12 @@ export const createAsyncThunkWithTokenRefresh = <
           refreshedToken.response &&
           refreshedToken.response?.status === 401
         ) {
-          // Manually set an error in the Redux state
-          console.log("Refresh token expired");
+          // Manually set an error in the Redux state that refresh token expires
+
           throw new Error(refreshedToken.response?.data?.error);
         } else if (refreshedToken?.token) {
           // If token refresh is successful, retry the original request with the new access token
           try {
-            console.log("code entered retry fuction with refresh token");
-
             const retryResponse = await requestFunction(
               refreshedToken?.token,
               payload
@@ -123,8 +118,6 @@ export const createAsyncThunkWithTokenRefresh = <
           } catch (error) {
             // Handle errors in the retry request
             const refreshAxiosError = error as AxiosError<ErrorResponseType>;
-
-            console.log("code entered after getting refresh token");
             throw new Error(
               refreshAxiosError.response?.data?.error || "An error occurred"
             );
@@ -140,7 +133,6 @@ export const createAsyncThunkWithTokenRefresh = <
         );
       } else {
         // Throw a generic error if none of the specific error conditions are met
-        console.log("code entered in generic error");
         throw new Error(
           axiosError.response?.data?.error || "An error occurred"
         );
