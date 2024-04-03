@@ -79,7 +79,7 @@ export type InputDataType = {
   status: string;
 };
 
-export type AddSuccessPayloadType = InputDataType & {
+export type AddSuccessApiResponse = InputDataType & {
   datecreated: string;
   _id: string;
   __v: number;
@@ -112,7 +112,7 @@ export type CrudInitialState = {
   employeeProfileIsError: boolean;
   employeeProfileError: string;
 
-  employeeAddedData: AddSuccessPayloadType | null;
+  employeeAddedData: AddSuccessApiResponse | null;
   employeeAddedDataIsSuccess: boolean;
   employeeAddDataLoading: boolean;
   employeeAddedDataIsError: boolean;

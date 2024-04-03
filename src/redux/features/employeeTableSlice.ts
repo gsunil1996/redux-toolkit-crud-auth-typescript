@@ -6,7 +6,7 @@ import {
 } from "../commonFunction";
 import { baseUrl } from "../baseUrl";
 import {
-  AddSuccessPayloadType,
+  AddSuccessApiResponse,
   CrudInitialState,
   DeleteEmployeeTableApiResponse,
   DeleteEmployeeProps,
@@ -83,7 +83,7 @@ export const addEmployeeTableData = createAsyncThunkWithTokenRefresh(
   "employeeTable/addEmployeeTableData",
   async (token: string, payload: InputDataType) => {
     const headers = {}; // Adjust the value as needed
-    return axios.post<AddSuccessPayloadType>(
+    return axios.post<AddSuccessApiResponse>(
       `${baseUrl}/addEmployee`,
       payload,
       createAxiosConfig(token, headers)
@@ -196,7 +196,7 @@ export const employeeTableSlice = createSlice({
         state.employeeAddedDataIsSuccess = false;
       })
       .addCase(addEmployeeTableData.fulfilled, (state, action) => {
-        state.employeeAddedData = action.payload as AddSuccessPayloadType;
+        state.employeeAddedData = action.payload as AddSuccessApiResponse;
         state.employeeAddDataLoading = false;
         state.employeeAddedDataIsError = false;
         state.employeeAddedDataError = "";
