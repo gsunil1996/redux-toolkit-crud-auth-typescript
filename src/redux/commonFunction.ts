@@ -1,7 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseUrl } from "./baseUrl";
-import { ErrorResponseType, payloadTypes } from "@/types/crud.types";
+import { ErrorResponseType } from "@/types/crud.types";
+import { payloadTypes } from "@/types/common.types";
 
 // Function to create axios config with authorization headers
 export const createAxiosConfig = (token: string, additionalHeaders = {}) => ({

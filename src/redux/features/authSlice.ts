@@ -6,31 +6,39 @@ import {
   createAsyncThunkWithTokenRefresh,
   createAxiosConfig,
 } from "../commonFunction";
+import {
+  AuthInitialState,
+  LoginData,
+  LoginProps,
+  RefreshData,
+  RegisterData,
+  RegisterUserProps,
+} from "@/types/auth.types";
 
-const initialState = {
+const initialState: AuthInitialState = {
   // register
-  registerData: {},
+  registerData: null,
   registerIsLoading: false,
   registerIsError: false,
   registerError: "",
   registerIsSuccess: false,
 
   // login
-  loginData: {},
+  loginData: null,
   loginIsLoading: false,
   loginIsError: false,
   loginError: "",
   loginIsSuccess: false,
 
   // refresh
-  refreshData: {},
+  refreshData: null,
   refreshIsLoading: false,
   refreshIsError: false,
   refreshError: "",
   refreshIsSuccess: false,
 
   // check token validity
-  checkTokenValidityData: {},
+  checkTokenValidityData: null,
   checkTokenValidityIsLoading: false,
   checkTokenValidityIsError: false,
   checkTokenValidityError: "",
@@ -39,11 +47,15 @@ const initialState = {
 
 export const registerAction = createAsyncThunk(
   "auth/registerAction",
-  async (payload) => {
+  async (payload: RegisterUserProps, thunkAPI) => {
     try {
-      const response = await axios.post(`${baseUrl}/register`, payload, {
-        headers: {},
-      });
+      const response = await axios.post<RegisterData>(
+        `${baseUrl}/register`,
+        payload,
+        {
+          headers: {},
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -66,11 +78,15 @@ export const registerAction = createAsyncThunk(
 
 export const loginAction = createAsyncThunk(
   "auth/loginAction",
-  async (payload: { email: string; password: string }) => {
+  async (payload: LoginProps, thunkAPI) => {
     try {
-      const response = await axios.post(`${baseUrl}/login`, payload, {
-        headers: {},
-      });
+      const response = await axios.post<LoginData>(
+        `${baseUrl}/login`,
+        payload,
+        {
+          headers: {},
+        }
+      );
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refresh_token", response.data.refreshToken);
@@ -102,11 +118,14 @@ export const authRefreshAction = createAsyncThunk(
     try {
       const refresh_token = localStorage.getItem("refresh_token");
 
-      const refreshResponse = await axios.get(`${baseUrl}/refresh`, {
-        headers: {
-          Authorization: `Bearer ${refresh_token}`,
-        },
-      });
+      const refreshResponse = await axios.get<RefreshData>(
+        `${baseUrl}/refresh`,
+        {
+          headers: {
+            Authorization: `Bearer ${refresh_token}`,
+          },
+        }
+      );
 
       if (refreshResponse.data && refreshResponse.data.token) {
         // console.log('refreshResponse', refreshResponse)
@@ -183,7 +202,7 @@ export const authSlice = createSlice({
 
       // login
       .addCase(loginAction.pending, (state) => {
-        state.loginData = {};
+        state.loginData = null;
         state.loginIsLoading = true;
         state.loginIsError = false;
         state.loginError = "";
@@ -201,7 +220,7 @@ export const authSlice = createSlice({
       .addCase(loginAction.rejected, (state, action) => {
         // console.log('loginAction Inside error', action)
 
-        state.loginData = {};
+        state.loginData = null;
         state.loginIsLoading = false;
         state.loginIsError = true;
         state.loginError = action.error.message
@@ -212,7 +231,7 @@ export const authSlice = createSlice({
 
       // refresh
       .addCase(authRefreshAction.pending, (state) => {
-        state.refreshData = {};
+        state.refreshData = null;
         state.refreshIsLoading = true;
         state.refreshIsError = false;
         state.refreshError = "";
@@ -229,7 +248,7 @@ export const authSlice = createSlice({
       })
       .addCase(authRefreshAction.rejected, (state, action) => {
         // console.log("Inside error", action)
-        state.refreshData = {};
+        state.refreshData = null;
         state.refreshIsLoading = false;
         state.refreshIsError = true;
         state.refreshError = action.error.message
@@ -240,7 +259,7 @@ export const authSlice = createSlice({
 
       // check token validity
       .addCase(checkTokenValidtyAction.pending, (state) => {
-        state.checkTokenValidityData = {};
+        state.checkTokenValidityData = null;
         state.checkTokenValidityIsLoading = true;
         state.checkTokenValidityIsError = false;
         state.checkTokenValidityError = "";
@@ -257,7 +276,7 @@ export const authSlice = createSlice({
       })
       .addCase(checkTokenValidtyAction.rejected, (state, action) => {
         // console.log("Inside error", action)
-        state.checkTokenValidityData = {};
+        state.checkTokenValidityData = null;
         state.checkTokenValidityIsLoading = false;
         state.checkTokenValidityIsError = true;
         state.checkTokenValidityError = action.error.message

@@ -35,7 +35,7 @@ const PersistLogin = ({ children }: ChildrenProps) => {
     if (!token) {
       dispatch(authRefreshAction());
     } else {
-      dispatch(checkTokenValidtyAction());
+      dispatch(checkTokenValidtyAction(undefined));
     }
   }, [dispatch]);
 

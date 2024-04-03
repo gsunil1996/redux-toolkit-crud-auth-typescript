@@ -168,7 +168,7 @@ export type GetSingleEmployeeParmsType = {
 };
 
 // Slice types
-export type payloadTypes =
+export type CrudPayloadTypes =
   | GetEmployeeTableDataProps
   | GetEmployeeProfileProps
   | InputDataType

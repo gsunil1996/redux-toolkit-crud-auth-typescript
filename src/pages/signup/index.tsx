@@ -19,6 +19,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { registerAction } from "@/redux/features/authSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    dispatch(registerAction({ username, email, password }))
     // console.log(username, email, password)
   }
 

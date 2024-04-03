@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import { useRouter } from "next/router";
 
 
-interface UserDetails {
+type UserDetails = {
   username: string;
   // Add other user details properties here if needed
 }
