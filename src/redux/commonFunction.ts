@@ -69,7 +69,8 @@ export const createAsyncThunkWithTokenRefresh = <
       }
 
       // Handle unauthorized (401) error (access token expired)
-      if (axiosError.response && axiosError.response.status === 401) {
+      else if (axiosError.response && axiosError.response.status === 401) {
+        console.log("code entered on token expired");
         // Attempt to refresh the access token
         const refreshedToken = await refreshAccessToken();
 
@@ -100,15 +101,18 @@ export const createAsyncThunkWithTokenRefresh = <
         }
 
         // Handle unauthorized (401) error after token refresh (refresh token expired)
-        if (
+        else if (
           refreshedToken.response &&
           refreshedToken.response?.status === 401
         ) {
           // Manually set an error in the Redux state
+          console.log("Refresh token expired");
           throw new Error(refreshedToken.response?.data?.error);
         } else if (refreshedToken?.token) {
           // If token refresh is successful, retry the original request with the new access token
           try {
+            console.log("code entered retry fuction with refresh token");
+
             const retryResponse = await requestFunction(
               refreshedToken?.token,
               payload
@@ -118,31 +122,28 @@ export const createAsyncThunkWithTokenRefresh = <
             return retryResponse.data;
           } catch (error) {
             // Handle errors in the retry request
+            const refreshAxiosError = error as AxiosError<ErrorResponseType>;
+
+            console.log("code entered after getting refresh token");
             throw new Error(
-              axiosError.response?.data?.error || "An error occurred"
+              refreshAxiosError.response?.data?.error || "An error occurred"
             );
           }
-        } else {
-          // Handle cases where token refresh fails
-          throw new Error(
-            refreshedToken.response?.data?.error || "Token refresh failed"
-          );
         }
-      }
-
-      if (axiosError.message == "Network Error") {
+      } else if (axiosError.message == "Network Error") {
         throw new Error(
           "There was an error with the internal server. Please contact your site administrator."
         );
-      }
-
-      if (!axiosError.response) {
+      } else if (!axiosError.response) {
         throw new Error(
           "There was an error with the internal server. Please contact your site administrator."
         );
+      } else {
+        // Throw a generic error if none of the specific error conditions are met
+        console.log("code entered in generic error");
+        throw new Error(
+          axiosError.response?.data?.error || "An error occurred"
+        );
       }
-
-      // Throw a generic error if none of the specific error conditions are met
-      throw new Error(axiosError.response?.data?.error || "An error occurred");
     }
   });
