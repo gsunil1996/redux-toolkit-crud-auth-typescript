@@ -33,11 +33,7 @@ const AddEmployee = (props: AddEmployeeComponentProps) => {
   const { addEmployeeOpen, setAddEmployeeOpen, setPage } = props;
   const dispatch = useAppDispatch();
 
-  const isLoading = useAppSelector(
-    (state) => state.employees.employeeAddDataLoading
-  );
-
-  const { employeeAddedDataIsError, employeeAddedDataError, employeeAddedDataIsSuccess } = useAppSelector(
+  const { employeeAddDataLoading, employeeAddedDataIsError, employeeAddedDataError, employeeAddedDataIsSuccess } = useAppSelector(
     (state) => state.employees
   );
 
@@ -260,7 +256,7 @@ const AddEmployee = (props: AddEmployeeComponentProps) => {
               </Grid>
             </Grid>
             <Button variant="contained" color="primary" type="submit" fullWidth>
-              {isLoading ? (
+              {employeeAddDataLoading ? (
                 <CircularProgress style={{ color: "#fff" }} />
               ) : (
                 "Submit"
