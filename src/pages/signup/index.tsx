@@ -6,23 +6,23 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { FormEvent, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
 import Link from "next/link";
-
 import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import FilledInput from '@mui/material/FilledInput';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { registerAction } from "@/redux/features/authSlice";
+import { registerAction, resetRegisterAction } from "@/redux/features/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const SignUp = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { registerIsLoading, registerIsError, registerError, registerIsSuccess } = useAppSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -34,9 +34,20 @@ const SignUp = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // console.log("checkRegister", username, email, password)
     dispatch(registerAction({ username, email, password }))
-    // console.log(username, email, password)
   }
+
+  useEffect(() => {
+    if (registerIsSuccess) {
+      toast("User Registered Successfully", { autoClose: 2000, type: "success" });
+      dispatch(resetRegisterAction());
+      router.push("/login")
+    } else if (registerIsError) {
+      toast(registerError, { autoClose: 2000, type: "error" });
+      dispatch(resetRegisterAction());
+    }
+  }, [registerIsSuccess, registerIsError])
 
   return (
     <Container component="main" maxWidth="xs">
@@ -112,8 +123,7 @@ const SignUp = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            {/* {isLoading ? <div>Loading ...</div> : "Sign In"} */}
-            Sign Up
+            {registerIsLoading ? <div>Loading ...</div> : "Sign UP"}
 
           </Button>
           <Grid container justifyContent="flex-end">

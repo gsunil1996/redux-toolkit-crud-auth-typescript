@@ -8,6 +8,7 @@ import {
 } from "../commonFunction";
 import {
   AuthInitialState,
+  CheckTokenValidityData,
   LoginData,
   LoginProps,
   RefreshData,
@@ -158,7 +159,10 @@ export const checkTokenValidtyAction = createAsyncThunkWithTokenRefresh(
   "auth/checkTokenValidtyAction",
   async (token: string, payload) => {
     const headers = {}; // Adjust the value as needed
-    return axios.get(`${baseUrl}/protected`, createAxiosConfig(token, headers));
+    return axios.get<CheckTokenValidityData>(
+      `${baseUrl}/protected`,
+      createAxiosConfig(token, headers)
+    );
   }
 );
 
@@ -170,27 +174,28 @@ export const authSlice = createSlice({
       localStorage.clear();
     },
     resetRegisterAction(state) {
+      state.registerData = null;
       state.registerIsLoading = false;
       state.registerIsError = false;
       state.registerError = "";
       state.registerIsSuccess = false;
     },
     resetLoginAction(state) {
-      // state.loginData = {}
+      state.loginData = null;
       state.loginIsLoading = false;
       state.loginIsError = false;
       state.loginError = "";
       state.loginIsSuccess = false;
     },
     resetRefreshction(state) {
-      // state.refreshData = {}
+      state.refreshData = null;
       state.refreshIsLoading = false;
       state.refreshIsError = false;
       state.refreshError = "";
       state.refreshIsSuccess = false;
     },
     resetCheckTokenValidtyAction(state) {
-      // state.checkTokenValidityData = {}
+      state.checkTokenValidityData = null;
       state.checkTokenValidityIsLoading = false;
       state.checkTokenValidityIsError = false;
       state.checkTokenValidityError = "";
@@ -200,6 +205,30 @@ export const authSlice = createSlice({
   extraReducers(builder) {
     builder
 
+      // regitser
+      .addCase(registerAction.pending, (state) => {
+        state.registerData = null;
+        state.registerIsLoading = true;
+        state.registerIsError = false;
+        state.registerError = "";
+        state.registerIsSuccess = false;
+      })
+      .addCase(registerAction.fulfilled, (state, action) => {
+        state.registerData = action.payload;
+        state.registerIsLoading = false;
+        state.registerIsError = false;
+        state.registerError = "";
+        state.registerIsSuccess = true;
+      })
+      .addCase(registerAction.rejected, (state, action) => {
+        state.registerData = null;
+        state.registerIsLoading = false;
+        state.registerIsError = true;
+        state.registerError = action.error.message
+          ? action.error.message
+          : "An unknown error occurred";
+        state.registerIsSuccess = false;
+      })
       // login
       .addCase(loginAction.pending, (state) => {
         state.loginData = null;
@@ -268,7 +297,7 @@ export const authSlice = createSlice({
       .addCase(checkTokenValidtyAction.fulfilled, (state, action) => {
         // console.log("Inside fulfilled", action)
 
-        state.checkTokenValidityData = action.payload;
+        state.checkTokenValidityData = action.payload as CheckTokenValidityData;
         state.checkTokenValidityIsLoading = false;
         state.checkTokenValidityIsError = false;
         state.checkTokenValidityError = "";

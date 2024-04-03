@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-
 import IconButton from "@mui/material/IconButton";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
@@ -59,6 +58,7 @@ const Login = () => {
 
   useEffect(() => {
     localStorage.clear();
+    dispatch(resetLoginAction())
     dispatch(resetRefreshction());
     dispatch(resetCheckTokenValidtyAction());
     dispatch(resetRegisterAction());
