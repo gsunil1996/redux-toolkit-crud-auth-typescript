@@ -2,6 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { baseUrl } from "../baseUrl";
 import { ErrorResponseType } from "@/types/crud.types";
+import {
+  createAsyncThunkWithTokenRefresh,
+  createAxiosConfig,
+} from "../commonFunction";
 
 const initialState = {
   // register
@@ -131,63 +135,11 @@ export const authRefreshAction = createAsyncThunk(
   }
 );
 
-export const checkTokenValidtyAction = createAsyncThunk(
+export const checkTokenValidtyAction = createAsyncThunkWithTokenRefresh(
   "auth/checkTokenValidtyAction",
-  async (payload, thunkAPI) => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(`${baseUrl}/protected`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponseType>;
-
-      if (axiosError.response && axiosError.response.status === 504) {
-        throw new Error("Gateway Timeout");
-      } else if (axiosError.response && axiosError.response.status === 404) {
-        throw new Error("Not Found");
-      } else if (axiosError.response && axiosError.response.status === 401) {
-        try {
-          const refreshedToken = await thunkAPI.dispatch(authRefreshAction());
-
-          console.log("refreshedToken", refreshedToken);
-
-          const retryResponse = await axios.get(`${baseUrl}/protected`, {
-            headers: {
-              Authorization: `Bearer ${refreshedToken.payload.token}`,
-            },
-          });
-
-          localStorage.setItem("token", refreshedToken.payload.token);
-
-          return retryResponse.data;
-        } catch (refreshError) {
-          const axiosError = refreshError as AxiosError<ErrorResponseType>;
-          // console.error('Error dispatching authRefreshAction:', refreshError)
-          if (axiosError.response && axiosError.response.status === 504) {
-            throw new Error("Gateway Timeout");
-          } else if (axiosError.response && axiosError.response.data.error) {
-            throw new Error(axiosError.response.data.error);
-          } else {
-            throw new Error(
-              "There was an error with the internal server. Please contact your site administrator."
-            );
-          }
-        }
-      }
-
-      // Handle other errors here if needed
-      throw new Error(
-        axiosError.response
-          ? axiosError.response.data.error
-          : "An error occured"
-      );
-    }
+  async (token: string, payload) => {
+    const headers = {}; // Adjust the value as needed
+    return axios.get(`${baseUrl}/protected`, createAxiosConfig(token, headers));
   }
 );
 
