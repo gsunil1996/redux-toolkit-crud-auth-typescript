@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { baseUrl } from "./baseUrl";
 import { ErrorResponseType, payloadTypes } from "@/types/crud.types";
 
+// Function to create axios config with authorization headers
 export const createAxiosConfig = (token: string, additionalHeaders = {}) => ({
   headers: {
     Authorization: `Bearer ${token}`,
@@ -10,7 +11,7 @@ export const createAxiosConfig = (token: string, additionalHeaders = {}) => ({
   },
 });
 
-// Separate function for token refresh
+// Separate function for refreshing the access token
 export const refreshAccessToken = async () => {
   try {
     const refresh_token = localStorage.getItem("refresh_token");
@@ -29,7 +30,7 @@ export const refreshAccessToken = async () => {
   }
 };
 
-// Create an async thunk with token refresh functionality
+// Function to create an async thunk with token refresh functionality
 export const createAsyncThunkWithTokenRefresh = <
   PayloadType extends payloadTypes,
   ReturnType
@@ -53,6 +54,7 @@ export const createAsyncThunkWithTokenRefresh = <
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponseType>;
 
+      // Error handling based on different HTTP status codes
       if (axiosError.response && axiosError.response.status === 504) {
         throw new Error("Gateway Timeout");
       } else if (axiosError.response && axiosError.response.status === 404) {
@@ -72,6 +74,7 @@ export const createAsyncThunkWithTokenRefresh = <
         // Attempt to refresh the access token
         const refreshedToken = await refreshAccessToken();
 
+        // Error handling for different cases after token refresh
         if (refreshedToken.response && refreshedToken.response.status === 504) {
           throw new Error("Gateway Timeout");
         } else if (
