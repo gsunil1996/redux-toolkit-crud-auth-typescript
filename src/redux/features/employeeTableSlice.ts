@@ -257,7 +257,7 @@ export const employeeTableSlice = createSlice({
         state.employeeDeleteDataError = action.error.message
           ? action.error.message
           : "An unknown error occurred";
-        state.employeeDeleteDataIsSuccess = true;
+        state.employeeDeleteDataIsSuccess = false;
       });
   },
 });

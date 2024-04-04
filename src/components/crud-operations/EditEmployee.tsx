@@ -121,10 +121,10 @@ const EditEmployee = (props: EditEmployeeComponentProps) => {
       dispatch(getEmployeeTableData(employeeData))
     } else if (employeeEditDataIsError) {
       toast(employeeEditDataError, { autoClose: 2000, type: "error" });
-      dispatch(resetEditEmployee())
       if (employeeEditDataError === "Invalid Token") {
         router.push('/login')
       }
+      dispatch(resetEditEmployee())
     }
   }, [employeeEditDataIsSuccess, employeeEditDataIsError])
 
