@@ -100,10 +100,10 @@ const AddEmployee = (props: AddEmployeeComponentProps) => {
     } else if (employeeAddedDataIsError) {
       toast(employeeAddedDataError, { autoClose: 2000, type: "error" });
       if (employeeAddedDataError === "Invalid Token") {
+        dispatch(resetAddEmployee())
         router.push('/login')
       }
       dispatch(resetAddEmployee())
-
     }
   }, [employeeAddedDataIsSuccess, employeeAddedDataIsError])
 

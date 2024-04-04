@@ -13,7 +13,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
-import { editEmployeeTableData, getEmployeeTableData, resetEditEmployee } from "@/redux/features/employeeTableSlice";
+import { editEmployeeTableData, getEmployeeTableData, resetEditEmployee, resetGetEmployeeProfile } from "@/redux/features/employeeTableSlice";
 import { toast } from "react-toastify";
 import { TransitionProps } from "@mui/material/transitions";
 import { EditEmployeeComponentProps } from "@/types/crud.types";
@@ -47,7 +47,7 @@ const EditEmployee = (props: EditEmployeeComponentProps) => {
   const employeeProfileIsError = useAppSelector(
     (state) => state.employees.employeeProfileIsError
   );
-  const employeeDetailsError = useAppSelector(
+  const employeeProfileError = useAppSelector(
     (state) => state.employees.employeeProfileError
   );
   const employeeProfileIsSuccess = useAppSelector(
@@ -122,11 +122,17 @@ const EditEmployee = (props: EditEmployeeComponentProps) => {
     } else if (employeeEditDataIsError) {
       toast(employeeEditDataError, { autoClose: 2000, type: "error" });
       if (employeeEditDataError === "Invalid Token") {
+        dispatch(resetEditEmployee())
         router.push('/login')
       }
       dispatch(resetEditEmployee())
+    } else if (employeeProfileIsError) {
+      if (employeeProfileError === "Invalid Token") {
+        dispatch(resetGetEmployeeProfile())
+        router.push('/login')
+      }
     }
-  }, [employeeEditDataIsSuccess, employeeEditDataIsError])
+  }, [employeeEditDataIsSuccess, employeeEditDataIsError, employeeProfileIsError])
 
   useEffect(() => {
     if (
@@ -177,7 +183,7 @@ const EditEmployee = (props: EditEmployeeComponentProps) => {
           <div
             style={{ width: "100%", marginTop: "20px", textAlign: "center" }}
           >
-            <h1>{employeeDetailsError}</h1>
+            <h1>{employeeProfileError}</h1>
           </div>
         ) : employeeProfileIsSuccess ? (
           <DialogContent dividers>

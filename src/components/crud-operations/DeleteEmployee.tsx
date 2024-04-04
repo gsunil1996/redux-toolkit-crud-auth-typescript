@@ -70,6 +70,7 @@ const DeleteEmployee = (props: DeleteEmployeeComponentProps) => {
     } else if (employeeDeleteDataIsError) {
       toast(employeeDeleteDataError, { autoClose: 2000, type: "error" });
       if (employeeDeleteDataError === "Invalid Token") {
+        dispatch(resetDeleteEmployee())
         router.push('/login')
       }
       dispatch(resetDeleteEmployee())
